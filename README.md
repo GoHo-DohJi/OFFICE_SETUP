@@ -11,7 +11,7 @@
 
 ### INSTALL AND RUN
 ```shell
-irm "https://raw.githubusercontent.com/3DZHio/OFFICE_SETUP/MAIN/INSTALL.ps1" | iex
+irm "https://raw.githubusercontent.com/GoHo-DohJi/OFFICE_SETUP/main/INSTALL.ps1" | iex
 ```
 
 

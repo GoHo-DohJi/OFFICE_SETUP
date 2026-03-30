@@ -1,4 +1,4 @@
-# Fraktur Text Art ( https://fontgenro.com/ascii-text-generator ) #
+﻿# Fraktur Text Art ( https://fontgenro.com/ascii-text-generator ) #
 $LOGO = @"
                                    .                         
                oec :     oec :    @88>                       

@@ -123,6 +123,12 @@ function Update-Configuration {
         }
     }
     
+    # Change Display Level to None for Silent Installation
+    $DisplayNode = $ConfigXml.Configuration.Display
+    if ($null -ne $DisplayNode) {
+        $DisplayNode.Level = "None"
+    }
+    
     $ConfigXml.Save($OutputPath)
 }
 

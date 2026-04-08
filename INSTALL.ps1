@@ -32,6 +32,7 @@ try {
 } catch {
     Write-Host "[x] ERROR: $($_.Exception.Message)" -ForegroundColor "Red"
     Write-Host "$_" -ForegroundColor "DarkRed"
+    Read-Host "Press [ENTER] to Exit"
     exit 1
 }
 

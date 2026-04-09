@@ -16,6 +16,7 @@ $ACTIVATION_SCRIPT_URL = "https://get.activated.win"
 
 $XML_TEMPLATE = @"
 <Configuration>
+
   <Add OfficeClientEdition="64" Channel="PerpetualVL2024">
     <Product ID="ProPlus2024Volume">
       <Language ID="ru-ru" />
@@ -26,21 +27,26 @@ $XML_TEMPLATE = @"
       <ExcludeApp ID="OneNote" />
     </Product>
   </Add>
+
   <RemoveMSI />
-  <Display Level="None" AcceptEULA="TRUE" />
+
+  <Display Level="Full" AcceptEULA="TRUE" />
   <Updates Enabled="TRUE" />
   <Property Name="AUTOACTIVATE" Value="1" />
+
   <Property Name="SharedComputerLicensing" Value="0" />
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
   <Property Name="DeviceBasedLicensing" Value="0" />
   <Property Name="SCLCacheOverride" Value="0" />
+
   <AppSettings>
     <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
     <User Key="software\microsoft\office\16.0\powerpoint\options" Name="defaultformat" Value="27" Type="REG_DWORD" App="ppt16" Id="L_SavePowerPointfilesas" />
     <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
-    <User Key="software\microsoft\office\16.0\word\options" Name="Ruler" Value="1" Type="REG_DWORD" App="word16" Id="L_WordRuler" />
-    <User Key="software\microsoft\office\16.0\word\options" Name="MeasurementUnits" Value="2" Type="REG_DWORD" App="word16" Id="L_WordMeasurementUnits" />
+    <User Key="software\microsoft\office\16.0\word\options" Name="Ruler" Value="1" Type="REG_DWORD" App="word16" Id="L_WordRuler" /> <!-- RULER /> -->
+    <User Key="software\microsoft\office\16.0\word\options" Name="MeasurementUnits" Value="2" Type="REG_DWORD" App="word16" Id="L_WordMeasurementUnits" /> <!-- MEASUREMENT UNITS /> -->
   </AppSettings>
+
 </Configuration>
 "@
 #endregion

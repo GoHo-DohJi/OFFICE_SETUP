@@ -32,8 +32,8 @@ pause
 :: exit /B 0
 
 
-:ERROR
-color 4F
-echo [X] ERROR OCCURRED
-pause
-exit /B 1
+:: :ERROR
+:: color 4F
+:: echo [X] ERROR OCCURRED
+:: pause
+:: exit /B 1

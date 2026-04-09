@@ -13,7 +13,7 @@
 
   <RemoveMSI />
 
-  <Display Level="Full" AcceptEULA="TRUE" /> <!-- <Display Level="None" AcceptEULA="TRUE" /> -->
+  <Display Level="Full" AcceptEULA="TRUE" />
   <Updates Enabled="TRUE" />
   <Property Name="AUTOACTIVATE" Value="1" />
 

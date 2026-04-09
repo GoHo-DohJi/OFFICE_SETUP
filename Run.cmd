@@ -17,10 +17,9 @@ set "SCRIPT=%TEMP_DIR%\%REPO%-main\SRC\MAIN.ps1"
 :: DOWNLOAD ::
 cls
 echo [*] DOWNLOADING...
-curl.exe -sSL "%URL%" -o "%ZIP%" || goto :ERROR
-
+curl.exe -sSL "%URL%" -o "%ZIP%"
 
 :: EXTRACT ::
 echo [*] EXTRACTING...
-tar -xf "%ZIP%" -C "%TEMP_DIR%" || goto :ERROR
+tar -xf "%ZIP%" -C "%TEMP_DIR%"
 del /F /Q "%ZIP%"

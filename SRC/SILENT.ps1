@@ -1,16 +1,3 @@
-<#
-.SYNOPSIS
-    Silent Office installation and activation script
-.DESCRIPTION
-    Installs Office from IMG file with custom product selection and activates using Ohook
-.PARAMETER ImagePath
-    Full path to Office IMG file
-.PARAMETER Products
-    Comma-separated list of products to install (Word, Excel, PowerPoint, Access)
-.EXAMPLE
-    .\InstallOffice.ps1 -ImagePath "C:\Office.img" -Products "Word, Excel, PowerPoint, Access"
-#>
-
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
@@ -23,19 +10,39 @@ param(
 )
 
 #region CONSTANTS
-$CONFIG_TEMPLATE_PATH = Join-Path $PSScriptRoot "CONFIGURATION_TEMPLATE.xml"
-$CONFIG_PATH = Join-Path $PSScriptRoot "CONFIGURATION.xml"
+$CONFIG_PATH = "Office\CONFIGURATION.xml"
 $SETUP_EXECUTABLE = "Office\Setup64.exe"
 $ACTIVATION_SCRIPT_URL = "https://get.activated.win"
 
-$PRODUCT_MAP = @{
-    "Word"       = "Word"
-    "Excel"      = "Excel"
-    "PowerPoint" = "PowerPoint"
-    "Access"     = "Access"
-}
-
-$ALL_EXCLUDABLE_APPS = @("Word", "Excel", "PowerPoint", "Access", "Outlook", "OneNote", "Publisher", "Lync", "OneDrive")
+$XML_TEMPLATE = @"
+<Configuration>
+  <Add OfficeClientEdition="64" Channel="PerpetualVL2024">
+    <Product ID="ProPlus2024Volume">
+      <Language ID="ru-ru" />
+      <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Outlook" />
+      <ExcludeApp ID="OneNote" />
+    </Product>
+  </Add>
+  <RemoveMSI />
+  <Display Level="None" AcceptEULA="TRUE" />
+  <Updates Enabled="TRUE" />
+  <Property Name="AUTOACTIVATE" Value="1" />
+  <Property Name="SharedComputerLicensing" Value="0" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="DeviceBasedLicensing" Value="0" />
+  <Property Name="SCLCacheOverride" Value="0" />
+  <AppSettings>
+    <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
+    <User Key="software\microsoft\office\16.0\powerpoint\options" Name="defaultformat" Value="27" Type="REG_DWORD" App="ppt16" Id="L_SavePowerPointfilesas" />
+    <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
+    <User Key="software\microsoft\office\16.0\word\options" Name="Ruler" Value="1" Type="REG_DWORD" App="word16" Id="L_WordRuler" />
+    <User Key="software\microsoft\office\16.0\word\options" Name="MeasurementUnits" Value="2" Type="REG_DWORD" App="word16" Id="L_WordMeasurementUnits" />
+  </AppSettings>
+</Configuration>
+"@
 #endregion
 
 #region FUNCTIONS
@@ -71,65 +78,39 @@ function Show-Notification {
         Start-Sleep -Seconds 2
         $Notification.Dispose()
     } catch {
-        # Fallback to console if notification fails
         if ($Type -eq "Error") {
             [Console]::Error.WriteLine("${Title}: ${Message}")
         }
     }
 }
 
-function Get-ExcludedApps {
+function New-ConfigurationFile {
     param(
+        [Parameter(Mandatory = $true)]
+        [string]$MountPath,
+        
         [Parameter(Mandatory = $true)]
         [string[]]$SelectedProducts
     )
     
-    $NormalizedProducts = $SelectedProducts | ForEach-Object { $_.Trim() }
-    $ExcludedApps = $ALL_EXCLUDABLE_APPS | Where-Object { $_ -notin $NormalizedProducts }
-    
-    return $ExcludedApps
-}
-
-function Update-Configuration {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$TemplatePath,
-        
-        [Parameter(Mandatory = $true)]
-        [string]$OutputPath,
-        
-        [Parameter(Mandatory = $true)]
-        [string[]]$ExcludedApps
-    )
-    
-    if (-not (Test-Path $TemplatePath)) {
-        throw "Configuration template not found at: $TemplatePath"
-    }
-    
-    [xml]$ConfigXml = Get-Content $TemplatePath -Encoding UTF8 -ErrorAction Stop
-    
+    [xml]$ConfigXml = $XML_TEMPLATE
     $ProductNode = $ConfigXml.Configuration.Add.Product
-    if ($null -eq $ProductNode) {
-        throw "Invalid configuration template: Product node not found"
+    
+    # Добавляем все приложения кроме выбранных в ExcludeApp
+    $AllApps = @("Word", "Excel", "PowerPoint", "Access")
+    $AppsToExclude = $AllApps | Where-Object { $_ -notin $SelectedProducts }
+    
+    foreach ($App in $AppsToExclude) {
+        $ExcludeNode = $ConfigXml.CreateElement("ExcludeApp")
+        $ExcludeNode.SetAttribute("ID", $App) | Out-Null
+        $ProductNode.AppendChild($ExcludeNode) | Out-Null
     }
     
-    $ExistingExclusions = $ProductNode.SelectNodes("ExcludeApp") | ForEach-Object { $_.ID }
+    # Сохраняем конфигурацию
+    $ConfigFilePath = Join-Path $MountPath $CONFIG_PATH
+    $ConfigXml.Save($ConfigFilePath)
     
-    foreach ($App in $ExcludedApps) {
-        if ($App -notin $ExistingExclusions) {
-            $ExcludeNode = $ConfigXml.CreateElement("ExcludeApp")
-            $ExcludeNode.SetAttribute("ID", $App) | Out-Null
-            $ProductNode.AppendChild($ExcludeNode) | Out-Null
-        }
-    }
-    
-    # Change Display Level to None for Silent Installation
-    $DisplayNode = $ConfigXml.Configuration.Display
-    if ($null -ne $DisplayNode) {
-        $DisplayNode.Level = "None"
-    }
-    
-    $ConfigXml.Save($OutputPath)
+    return $ConfigFilePath
 }
 
 function Mount-OfficeImage {
@@ -196,17 +177,14 @@ $ErrorActionPreference = "Stop"
 $MountedDrive = $null
 
 try {
-    # Calculate excluded apps
-    $ExcludedApps = Get-ExcludedApps -SelectedProducts $Products
-    
-    # Update configuration file
-    Update-Configuration -TemplatePath $CONFIG_TEMPLATE_PATH -OutputPath $CONFIG_PATH -ExcludedApps $ExcludedApps
-    
     # Mount image
     $MountedDrive = Mount-OfficeImage -ImagePath $ImagePath
     
+    # Create configuration file
+    $ConfigFilePath = New-ConfigurationFile -MountPath $MountedDrive -SelectedProducts $Products
+    
     # Install Office
-    Install-Office -MountPath $MountedDrive -ConfigPath $CONFIG_PATH
+    Install-Office -MountPath $MountedDrive -ConfigPath $ConfigFilePath
     
     # Activate Office
     Invoke-Activation

@@ -24,5 +24,3 @@ curl.exe -sSL "%URL%" -o "%ZIP%" || goto :ERROR
 echo [*] EXTRACTING...
 tar -xf "%ZIP%" -C "%TEMP_DIR%" || goto :ERROR
 del /F /Q "%ZIP%"
-
-

@@ -27,6 +27,7 @@ del /F /Q "%ZIP%"
 
 :: RUN ::
 echo [√] SUCCESS
+pause
 PowerShell -NoProfile -ExecutionPolicy "Bypass" -WindowStyle "Maximized" -File "%SCRIPT%"
 exit /B 0
 

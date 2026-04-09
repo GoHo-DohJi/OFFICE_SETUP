@@ -30,7 +30,7 @@ $XML_TEMPLATE = @"
 
   <RemoveMSI />
 
-  <Display Level="Full" AcceptEULA="TRUE" />
+  <Display Level="None" AcceptEULA="TRUE" />
   <Updates Enabled="TRUE" />
   <Property Name="AUTOACTIVATE" Value="1" />
 

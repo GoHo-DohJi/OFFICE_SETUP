@@ -1,4 +1,4 @@
-:: SETTINGS :: 
+﻿:: SETTINGS :: 
 @echo off
 
 

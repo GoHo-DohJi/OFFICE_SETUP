@@ -25,15 +25,4 @@ echo [*] EXTRACTING...
 tar -xf "%ZIP%" -C "%TEMP_DIR%" || goto :ERROR
 del /F /Q "%ZIP%"
 
-pause
-:: RUN ::
-:: echo [√] SUCCESS
-:: PowerShell -NoProfile -ExecutionPolicy "Bypass" -WindowStyle "Maximized" -File "%SCRIPT%"
-:: exit /B 0
 
-
-:: :ERROR
-:: color 4F
-:: echo [X] ERROR OCCURRED
-:: pause
-:: exit /B 1

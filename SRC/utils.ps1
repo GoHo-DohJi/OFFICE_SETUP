@@ -1,17 +1,17 @@
-﻿function Console-Settings {
-    ## MAXIMIZE CONSOLE WINDOW ##
-    if (-not ([System.Management.Automation.PSTypeName]"Win32.Functions").Type) {
-        Add-Type -NameSpace "Win32" -Name "Functions" -MemberDefinition @"
-[DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
-[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-"@
-    }
-    [Win32.Functions]::ShowWindow([Win32.Functions]::GetConsoleWindow(), 3) | Out-Null
+# ﻿function Console-Settings {
+#     ## MAXIMIZE CONSOLE WINDOW ##
+#     if (-not ([System.Management.Automation.PSTypeName]"Win32.Functions").Type) {
+#         Add-Type -NameSpace "Win32" -Name "Functions" -MemberDefinition @"
+# [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+# [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+# "@
+#     }
+#     [Win32.Functions]::ShowWindow([Win32.Functions]::GetConsoleWindow(), 3) | Out-Null
 
 
-    ## LOCK CONSOLE SCROLL ##
-    $Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size($Host.UI.RawUI.WindowSize.Width, $Host.UI.RawUI.WindowSize.Height)
-}
+#     ## LOCK CONSOLE SCROLL ##
+#     $Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size($Host.UI.RawUI.WindowSize.Width, $Host.UI.RawUI.WindowSize.Height)
+# }
 
 
 function Write-Centered {
@@ -52,7 +52,7 @@ function Write-Centered {
     #region ||| SETTINGS |||
 
     Clear-Host
-    Console-Settings
+    # Console-Settings
 
     #endregion
 

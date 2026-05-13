@@ -25,7 +25,10 @@ irm "https://raw.githubusercontent.com/GoHo-DohJi/OFFICE_SETUP/main/INSTALL.ps1"
 
 
 <div align="center">
-  
+
+
+![](activation_preview.png)
+
 ## 📦 ADDITIONAL RESOURCES 📦
 
 </div>
